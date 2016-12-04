@@ -1,4 +1,4 @@
-a Web App and RESTful API Server Using the MEAN Stack:
+A Web App and RESTful API Server Using the MEAN Stack:
 MongoDB, Express, AngularJS, and Node.js
 
 It's based on a tutorial on [heroku](http://heroku.com):
