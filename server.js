@@ -15,43 +15,34 @@ app.use(bodyParser.json());
 var db;
 
 mongoose.connect(uristring, function (err, database) {
-    if (err) {
-        console.log('ERROR connecting to: ' + uristring + '. ' + err);
-        process.exit(1);
-    } else {
-        console.log('Succeeded connected to: ' + uristring);
-    }
+  if (err) {
+    console.log('ERROR connecting to: ' + uristring + '. ' + err);
+    process.exit(1);
+  } else {
+    console.log('Succeeded connected to: ' + uristring);
+  }
 
-    // Save database object from the callback for reuse.
-    db = database;
-    console.log("Database connection ready");
+  // Save database object from the callback for reuse.
+  db = database;
+  console.log("Database connection ready");
 
-    // Initialize the app.
-    var server = app.listen(process.env.PORT || 8080, function () {
-        var port = server.address().port;
-        console.log("App now running on port", port);
-    });
+  // Initialize the app.
+  var server = app.listen(process.env.PORT || 8080, function () {
+    var port = server.address().port;
+    console.log("App now running on port", port);
+  });
 });
 
-// This is the schema.  Note the types, validation and trim
-// statements.  They enforce useful constraints on the data.
-var userSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    email: String,
-    phone: String
-});
+require('./model/user.js');
 
-// Compiles the schema into a model, opening (or creating, if
-// nonexistent) the 'PowerUsers' collection in the MongoDB database
-var User = mongoose.model('AllUsers', userSchema);
+var User = mongoose.model('User');
 
 // CONTACTS API ROUTES BELOW
 
 // Generic error handler used by all endpoints.
 function handleError(res, reason, message, code) {
-    console.log("ERROR: " + reason);
-    res.status(code || 500).json({"error": message});
+  console.log("ERROR: " + reason);
+  res.status(code || 500).json({"error": message});
 }
 
 /*  "/contacts"
@@ -60,36 +51,36 @@ function handleError(res, reason, message, code) {
  */
 
 app.get("/contacts", function (req, res) {
-    User.find({}).exec(function (err, docs) {
-        if (err) {
-            // error handling
-            handleError(res, err.message, "Failed to get contacts.");
-        } else {
-            res.status(200).json(docs);
-        }
-    });
+  User.find({}).exec(function (err, docs) {
+    if (err) {
+      // error handling
+      handleError(res, err.message, "Failed to get contacts.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
 });
 
 app.post("/contacts", function (req, res) {
-    var body = req.body;
-    var newContact = new User({
-        firstName: body.firstName,
-        lastName: body.lastName,
-        email: body.email,
-        phone: body.phone
-    });
+  var body = req.body;
+  var newContact = new User({
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    phone: body.phone
+  });
 
-    if (!(req.body.firstName || req.body.lastName)) {
-        handleError(res, "Invalid user input", "Must provide a first or last name.", 400);
+  if (!(req.body.firstName || req.body.lastName)) {
+    handleError(res, "Invalid user input", "Must provide a first or last name.", 400);
+  }
+
+  newContact.save(function (err) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new contact.");
+    } else {
+      res.status(201).json(newContact);
     }
-
-    newContact.save(function (err, doc) {
-        if (err) {
-            handleError(res, err.message, "Failed to create new contact.");
-        } else {
-            res.status(201).json(newContact);
-        }
-    });
+  });
 });
 
 /*  "/contacts/:id"
@@ -99,37 +90,37 @@ app.post("/contacts", function (req, res) {
  */
 
 app.get("/contacts/:id", function (req, res) {
-    User.findOne({_id: new ObjectID(req.params.id)}, function (err, doc) {
-        if (err) {
-            handleError(res, err.message, "Failed to get contact");
-        } else {
-            res.status(200).json(doc);
-        }
-    });
+  User.findOne({_id: new ObjectID(req.params.id)}, function (err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to get contact");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
 });
 
 app.put("/contacts/:id", function (req, res) {
-    var updateDoc = req.body;
-    delete updateDoc._id;
+  var updateDoc = req.body;
+  delete updateDoc._id;
 
-    var query = {'_id': req.params.id};
+  var query = {'_id': req.params.id};
 
-    User.findOneAndUpdate(query, updateDoc, function (err) {
-        if (err) {
-            handleError(res, err.message, "Failed to update contact");
-        } else {
-            res.status(204).end();
-        }
-    });
+  User.findOneAndUpdate(query, updateDoc, function (err) {
+    if (err) {
+      handleError(res, err.message, "Failed to update contact");
+    } else {
+      res.status(204).end();
+    }
+  });
 });
 
 app.delete("/contacts/:id", function (req, res) {
-    User.remove({_id: req.params.id}, function (err) {
-        if (!err) {
-            res.status(204).end();
-        }
-        else {
-            handleError(res, err.message, "Failed to delete contact");
-        }
-    });
+  User.remove({_id: req.params.id}, function (err) {
+    if (!err) {
+      res.status(204).end();
+    }
+    else {
+      handleError(res, err.message, "Failed to delete contact");
+    }
+  });
 });
