@@ -3,7 +3,7 @@ MongoDB, Express, AngularJS, and Node.js
 
 It's based on a tutorial on [heroku](http://heroku.com):
 [Create a Web App and RESTful API Server Using the MEAN Stack](https://github.com/facebook/react/wiki/Sites-Using-React)
-And currently, the only difference is using [**mongoose**](http://mongoosejs.com/) for database modeling and interactions.
+And currently, one of the difference is using [**mongoose**](http://mongoosejs.com/) for database modeling and interactions.
 
 # MEAN stack
 The MEAN stack is a popular web development stack made up of MongoDB, Express, AngularJS, and Node.js. MEAN has gained popularity because it allows developers to program in JavaScript on both the client and the server. The MEAN stack enables a perfect harmony of JavaScript Object Notation (JSON) development: MongoDB stores data in a JSON-like format, Express, and Node.js facilitate easy JSON query creation, and AngularJS allows the client to seamlessly send and receive JSON documents.
