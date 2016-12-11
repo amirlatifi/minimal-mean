@@ -33,9 +33,9 @@ mongoose.connect(uristring, function (err, database) {
   });
 });
 
-require('./model/user.js');
+require('./model/contact.js');
 
-var User = mongoose.model('User');
+var Contact = mongoose.model('Contact');
 
 // CONTACTS API ROUTES BELOW
 
@@ -51,7 +51,7 @@ function handleError(res, reason, message, code) {
  */
 
 app.get("/contacts", function (req, res) {
-  User.find({}).exec(function (err, docs) {
+  Contact.find({}).exec(function (err, docs) {
     if (err) {
       // error handling
       handleError(res, err.message, "Failed to get contacts.");
@@ -63,7 +63,7 @@ app.get("/contacts", function (req, res) {
 
 app.post("/contacts", function (req, res) {
   var body = req.body;
-  var newContact = new User({
+  var newContact = new Contact({
     firstName: body.firstName,
     lastName: body.lastName,
     email: body.email,
@@ -90,7 +90,7 @@ app.post("/contacts", function (req, res) {
  */
 
 app.get("/contacts/:id", function (req, res) {
-  User.findOne({_id: new ObjectID(req.params.id)}, function (err, doc) {
+  Contact.findOne({_id: new ObjectID(req.params.id)}, function (err, doc) {
     if (err) {
       handleError(res, err.message, "Failed to get contact");
     } else {
@@ -105,7 +105,7 @@ app.put("/contacts/:id", function (req, res) {
 
   var query = {'_id': req.params.id};
 
-  User.findOneAndUpdate(query, updateDoc, function (err) {
+  Contact.findOneAndUpdate(query, updateDoc, function (err) {
     if (err) {
       handleError(res, err.message, "Failed to update contact");
     } else {
@@ -115,7 +115,7 @@ app.put("/contacts/:id", function (req, res) {
 });
 
 app.delete("/contacts/:id", function (req, res) {
-  User.remove({_id: req.params.id}, function (err) {
+  Contact.remove({_id: req.params.id}, function (err) {
     if (!err) {
       res.status(204).end();
     }
